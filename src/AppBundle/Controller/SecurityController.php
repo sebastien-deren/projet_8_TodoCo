@@ -13,6 +13,8 @@ class SecurityController extends Controller
      */
     public function loginAction(Request $request)
     {
+
+        //NOT IN CONTROLLER
         $authenticationUtils = $this->get('security.authentication_utils');
 
         $error = $authenticationUtils->getLastAuthenticationError();

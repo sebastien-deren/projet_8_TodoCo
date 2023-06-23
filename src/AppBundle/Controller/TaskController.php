@@ -29,6 +29,7 @@ class TaskController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            //JUST CALL A SERVICE
             $em = $this->getDoctrine()->getManager();
 
             $em->persist($task);
@@ -52,6 +53,7 @@ class TaskController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            //NOT IN CONTROLLER
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
@@ -70,6 +72,7 @@ class TaskController extends Controller
      */
     public function toggleTaskAction(Task $task)
     {
+        //ALL THAT AS NO PLACE IN CONTROLLER
         $task->toggle(!$task->isDone());
         $this->getDoctrine()->getManager()->flush();
 
@@ -83,6 +86,7 @@ class TaskController extends Controller
      */
     public function deleteTaskAction(Task $task)
     {
+        //NOT IN CONTROLLER
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
