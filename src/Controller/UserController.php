@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,7 @@ class UserController extends Controller
      */
     public function listAction()
     {
-        return $this->render('user/list.html.twig', ['users' => $this->getDoctrine()->getRepository('App:User')->findAll()]);
+        return $this->render('user/list.html.twig', ['users' => $this->getDoctrine()->getRepository(User::class)->findAll()]);
     }
 
     /**
@@ -23,16 +24,20 @@ class UserController extends Controller
      */
     public function createAction(Request $request)
     {
+
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
-        $form->handleRequest($request);
+        $form->handleRequest($request);          
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+
             //SHOULD NOT BE IN A CONTROLLER
             $em = $this->getDoctrine()->getManager();
+ 
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
+
 
             $em->persist($user);
             $em->flush();

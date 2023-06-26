@@ -16,16 +16,17 @@ security:
 
         main:
             pattern: ^/
+            security: false
             http_basic: ~
-            provider: doctrine
-            form_login:
-                login_path: login
-                check_path: login_check
-                always_use_default_target_path:  true
-                default_target_path:  /
-            logout: ~
+#            provider: doctrine
+#            form_login:
+#                login_path: login
+#                check_path: login_check
+#                always_use_default_target_path:  true
+#                default_target_path:  /
+#            logout: ~
 
     access_control:
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/users, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/users, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: PUBLIC_ACCESS }

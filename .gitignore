@@ -15,6 +15,7 @@
 /vendor/
 /web/bundles/
 /mysql/
+/docker/
 
 ###> symfony/phpunit-bridge ###
 .phpunit
