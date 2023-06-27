@@ -8,12 +8,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
+use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
+
 /**
  * @ORM\Table("user_app")
  * @ORM\Entity
  * @UniqueEntity("email")
  */
-class User implements PasswordAuthenticatedUserInterface
+class User implements UserInterface,PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Column(type="integer")
@@ -43,6 +45,10 @@ class User implements PasswordAuthenticatedUserInterface
     public function getId()
     {
         return $this->id;
+    }
+    public function getUserIdentifier():string
+    {
+        return $this->username;
     }
 
     public function getUsername()
@@ -80,7 +86,7 @@ class User implements PasswordAuthenticatedUserInterface
         $this->email = $email;
     }
 
-    public function getRoles()
+    public function getRoles():array
     {
         return array('ROLE_USER');
     }
