@@ -7,7 +7,10 @@ use App\Form\UserType;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserController extends AbstractController
 {
@@ -22,7 +25,7 @@ class UserController extends AbstractController
     /**
      * @Route("/users/create", name="user_create")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, UserPasswordEncoderInterface $encoder)
     {
 
         $user = new User();
@@ -35,7 +38,7 @@ class UserController extends AbstractController
             //SHOULD NOT BE IN A CONTROLLER
             $em = $this->getDoctrine()->getManager();
  
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
+            $password = $encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
 
 
