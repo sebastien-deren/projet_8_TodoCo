@@ -13,35 +13,31 @@
         }
     },
     "require": {
-        "php": "^7.2",
-
-        "symfony/framework-bundle": "^4.4",
-        "symfony/http-foundation": "^4.0",
-        "symfony/swiftmailer-bundle": "^2.3",
-        "symfony/polyfill-apcu": "^1.0",
-        "symfony/flex": "^1.20",
-        "symfony/security-bundle": "^4.0",
-        "symfony/validator": "^4.0",
-        "symfony/twig-bundle": "^4.0",
-        "symfony/form": "^4.0",
-        "symfony/dependency-injection": "^4.0",
-        "symfony/asset": "^4.0",
-        "symfony/dotenv": "^5.4",
-        "symfony/yaml": "^5.3",
-        "symfony/doctrine-bridge": "^4.0",
-        "symfony/console": "^4.0",
-        "symfony/monolog-bundle": "^3.8",
-        
-
+        "php": "^7.4",
         "doctrine/annotations": "^1.5",
-        "doctrine/orm": "^2.6",
-        "doctrine/doctrine-bundle": "^2.5",
+        "doctrine/doctrine-bundle": "^2.3",
         "doctrine/doctrine-migrations-bundle": "^3.1",
-
+        "doctrine/orm": "^2.6",
+        "sensio/framework-extra-bundle": "^6.2",
+        "symfony/asset": "^5.0",
+        "symfony/cache": "^5.0",
+        "symfony/console": "^5.0",
+        "symfony/dependency-injection": "^5.0",
+        "symfony/doctrine-bridge": "^5.0",
+        "symfony/dotenv": "^5.4",
+        "symfony/flex": "^1.20",
+        "symfony/form": "^5.0",
+        "symfony/framework-bundle": "^5.0",
+        "symfony/http-foundation": "^5.0",
+        "symfony/monolog-bundle": "^3.8",
+        "symfony/polyfill-apcu": "^1.0",
+        "symfony/security-bundle": "^5.0",
+        "symfony/swiftmailer-bundle": "^2.3",
+        "symfony/twig-bundle": "^5.0",
+        "symfony/validator": "^5.0",
+        "symfony/yaml": "^5.3",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0",
-        "sensio/framework-extra-bundle": "^6.2"
-
+        "twig/twig": "^2.12|^3.0"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -73,14 +69,16 @@
     },
     "extra": {
         "symfony": {
-            "id": "",
             "allow-contrib": false,
-        "require": "4.4.*"
+        "require": "5.0.*"
         }
     },
     "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true,
         "allow-plugins": {
             "symfony/flex": true
         }
-    }
+      }
+    
 }
