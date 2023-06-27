@@ -1,8 +1,8 @@
 security:
-    encoders:
-        App\Entity\User:
-          algorithm: bcrypt
+    password_hashers:
+        App\Entity\User: 'auto'
 
+    enable_authenticator_manager: true
     providers:
         doctrine:
             entity:
