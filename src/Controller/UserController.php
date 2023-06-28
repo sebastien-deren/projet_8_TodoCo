@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -58,15 +59,15 @@ class UserController extends AbstractController
     /**
      * @Route("/users/{id}/edit", name="user_edit")
      */
-    public function editAction(User $user, Request $request,ManagerRegistry $managerRegistry)
+    public function editAction(User $user, Request $request,ManagerRegistry $managerRegistry,UserPasswordHasherInterface $userPasswordHasherInterface)
     {
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             //SHOULD NOT BE IN A CONTROLLER
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
+            $password = $userPasswordHasherInterface->hashPassword($user, $user->getPassword());
             $user->setPassword($password);
 
             $managerRegistry->getManager()->flush();
