@@ -52,6 +52,6 @@ jobs:
     - name: Send test to codeClimage
       uses: paambaati/codeclimate-action@v4.0.0
       env:
-        CC_TEST_REPORTER_ID: code_climate_id
+        CC_TEST_REPORTER_ID: ffe067866c922987084ba2398b3954fc0bae8fef33ddbbe9faa4dc86e7aab3b3
       with:
         coverageLocations: test/clover/:clover
