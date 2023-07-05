@@ -56,7 +56,7 @@ class TaskController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             //NOT IN CONTROLLER
             $managerRegistry->getManager()->flush();
 
@@ -88,10 +88,10 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
-    public function deleteTaskAction(Task $task)
+    public function deleteTaskAction(Task $task,ManagerRegistry $managerRegistry)
     {
         //NOT IN CONTROLLER
-        $em = $this->getDoctrine()->getManager();
+        $em = $managerRegistry->getManager();
         $em->remove($task);
         $em->flush();
 
