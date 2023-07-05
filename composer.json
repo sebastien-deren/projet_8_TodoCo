@@ -9,13 +9,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "Tests\\": "tests/"
         }
     },
     "require": {
         "php": "^8.2",
         "doctrine/annotations": "^2.0",
         "doctrine/doctrine-bundle": "^2.10",
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "doctrine/doctrine-migrations-bundle": "^3.1",
         "doctrine/orm": "^2.6",
         "sentry/sentry-symfony": "*",
@@ -42,6 +43,10 @@
     },
     "require-dev": {
         "rector/rector": "*",
+        "phpunit/phpunit": "^9.5",
+        "symfony/browser-kit": "6.3.*",
+        "symfony/css-selector": "6.3.*",
+        "symfony/maker-bundle": "^1.39",
         "symfony/phpunit-bridge": "^6.3",
         "symfony/maker-bundle": "^1.39",
         "symfony/stopwatch": "^5.4",

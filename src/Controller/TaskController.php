@@ -50,7 +50,7 @@ class TaskController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             //NOT IN CONTROLLER
             $managerRegistry->getManager()->flush();
 
