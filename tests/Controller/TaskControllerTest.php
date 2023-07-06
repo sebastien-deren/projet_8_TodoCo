@@ -49,11 +49,12 @@ class TaskControllerTest extends WebTestCase
      */
     public function testCreate(string $title,string $content, bool $isValid)
     {
-        $expectedEntityCount = count($this->taskRepository->findAll());
+        $expectedEntityCount = $this->taskRepository->count([]);
         $this->loginInAsUser($this->em);
         $crawler = $this->client->request('GET', 'tasks/create');
         $this->assertResponseStatusCodeSame(200);
         $form = $crawler->selectButton('Ajouter')->form();
+        $this->assertNotNull($form);
         $form->setValues(['task' => [
             'title' => $title,
             'content' => $content,
@@ -73,7 +74,7 @@ class TaskControllerTest extends WebTestCase
             $this->assertStringContainsString('devez saisir', $crawler->filter('form')->text());
             $this->assertGreaterThanOrEqual(1, $crawler->filter('ul li')->count());
         }
-        $this->assertSame($expectedEntityCount,count($this->taskRepository->findAll()));
+        $this->assertSame($expectedEntityCount,$this->taskRepository->count([]));
     }
 
     /**
@@ -87,6 +88,7 @@ class TaskControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', 'tasks/' . $task->getId() . '/edit');
         $this->assertResponseStatusCodeSame(200);
         $form = $crawler->selectButton('Modifier')->form();
+        $this->assertNotNull($form);
         $this->assertSame($task->getContent(), $form->getPhpValues()["task"]["content"]);
         $this->assertSame($task->getTitle(), $form->getPhpValues()['task']['title']);
 
@@ -131,14 +133,14 @@ class TaskControllerTest extends WebTestCase
      */
     public function testDeleteTask()
     {
-        $expectedEntityCount = count($this->taskRepository->findAll());
+        $expectedEntityCount = $this->taskRepository->count([]);
         $this->loginInAsUser($this->em);
         $task=$this->taskRepository->findAll()[0];
         $this->client->request('GET','tasks/'.$task->getId().'/delete');
         $this->assertResponseStatusCodeSame(302);
         $crawler = $this->client->followRedirect();
         $this->assertResponseStatusCodeSame(200);
-        $this->assertEquals($expectedEntityCount-1,count($this->taskRepository->findAll()));
+        $this->assertEquals($expectedEntityCount-1,$this->taskRepository->count([]));
     }
     public function formProvider()
     {

@@ -17,6 +17,11 @@ class UserFixtures extends Fixture
         $manager->persist($user);
         // $product = new Product();
         // $manager->persist($product);
+        $user= new User();
+        $user->setEmail("test@g.com");
+        $user->setPassword("test");
+        $user->setUsername("test");
+        $manager->persist($user);
 
         $manager->flush();
     }
