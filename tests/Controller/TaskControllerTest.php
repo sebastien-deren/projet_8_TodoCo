@@ -11,6 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+
 class TaskControllerTest extends WebTestCase
 {
 
@@ -28,7 +29,7 @@ class TaskControllerTest extends WebTestCase
         $this->taskRepository = $this->em->getRepository(Task::class);
     }
     /**
-     * @covers TaskController::listAction
+     *
      */
     public function testIndex()
     {
@@ -45,7 +46,7 @@ class TaskControllerTest extends WebTestCase
     }
     /**
      * @dataProvider formProvider
-     * @covers TaskController::editAction
+     *
      */
     public function testCreate(string $title,string $content, bool $isValid)
     {
@@ -79,7 +80,7 @@ class TaskControllerTest extends WebTestCase
 
     /**
      * @dataProvider formProvider
-     * @covers TaskController::editAction
+     *
      */
     public function testEdit(string $title, string $content, bool $validity)
     {
@@ -112,7 +113,7 @@ class TaskControllerTest extends WebTestCase
         }
     }
     /**
-     * @covers TaskController::toggleTaskAction
+     *
      */
     public function testToggle(){
         $this->loginInAsUser($this->em);
@@ -129,7 +130,7 @@ class TaskControllerTest extends WebTestCase
 
     }
     /**
-     * @covers TaskController:deleteTaskAction
+     *
      */
     public function testDeleteTask()
     {

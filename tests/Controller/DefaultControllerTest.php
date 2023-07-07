@@ -5,11 +5,10 @@ namespace Tests\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpClient\HttpClient;
 
+
 class DefaultControllerTest extends WebTestCase
 {
-    /**
-     * @covers DefaultController::indexAction
-     */
+
 
     public function testIndex()
     {

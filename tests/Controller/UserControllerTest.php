@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Tests\Controller;
 
 use App\Entity\User;
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Expr\Expression;
-use Doctrine\Common\Collections\ExpressionBuilder;
 use Tests\Security\SecurityTrait;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectManager;
@@ -15,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Security\Csrf\CsrfToken;
+
 
 class UserControllerTest extends WebTestCase
 {
@@ -34,7 +32,7 @@ class UserControllerTest extends WebTestCase
         $this->loginInAsUser($this->em);
     }
     /**
-     * @covers UserController::listAction
+     * 
      */
     public function testListAction()
     {
@@ -46,12 +44,11 @@ class UserControllerTest extends WebTestCase
     }
     /**
      * @dataProvider fieldProvider
-     * @covers UserController::createAction
+     * 
      */
     public function testCreateAction(array $fieldForm, bool $isValid, string $csrfToken = null)
     {
         $expectedEntityCount = $this->userRepository->count([]);
-        \var_dump($expectedEntityCount);
         $crawler = $this->client->request('get', '/users/create');
         $this->assertResponseStatusCodeSame(200);
         $this->checkFormSubmission($fieldForm, $isValid, 'Ajouter', $crawler);
@@ -59,7 +56,7 @@ class UserControllerTest extends WebTestCase
     }
     /**
      * @dataProvider fieldProvider
-     * @covers UsersController::editAction
+     * 
      */
     public function testEditAction(array $fieldForm, bool $isValid, string $csrfToken = null)
     {
@@ -96,8 +93,8 @@ class UserControllerTest extends WebTestCase
             [$this->createForm('test2', 'mdp', 'fauxmail.com'), false],
             [$this->createForm('test2', 'mdp', 'vraimail@g.com', 'paslemêmemdp'), false],
             /* The line above throw an Exception we should can and will catch this (we just need to set it to unique)
-            By creating a new \** @uniqueEntity(username) in our entity
-            //[$this->createForm('seb', 'mdp', 'vraimail@g.com'), false], //same name as another fixtures*/
+            By creating a new \** @uniqueEntity(username) in our entity*/
+            [$this->createForm('seb', 'mdp', 'vraimail@g.com'), false], //same name as another fixtures*/
             [$this->createForm('test2', 'mdp', 'email@g.com'), false] //same mail as another fixtures
 
         ];
