@@ -14,6 +14,7 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
  * @ORM\Table("user_app")
  * @ORM\Entity
  * @UniqueEntity("email")
+ * @UniqueEntity("username")
  */
 class User implements UserInterface,PasswordAuthenticatedUserInterface
 {

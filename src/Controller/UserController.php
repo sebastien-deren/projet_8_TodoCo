@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,15 +21,15 @@ class UserController extends AbstractController
     /**
      * @Route("/users", name="user_list")
      */
-    public function listAction(ManagerRegistry $managerRegistry)
+    public function listAction(UserRepository $userRepository)
     {
-        return $this->render('user/list.html.twig', ['users' => $managerRegistry->getRepository(User::class)->findAll()]);
+        return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
     }
 
     /**
      * @Route("/users/create", name="user_create")
      */
-    public function createAction(Request $request, UserPasswordHasherInterface $hasher,ManagerRegistry $managerRegistry)
+    public function createAction(Request $request, UserPasswordHasherInterface $hasher,UserRepository $userRepository)
     {
 
         $user = new User();
@@ -39,14 +40,9 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             //SHOULD NOT BE IN A CONTROLLER
-            $em = $managerRegistry->getManager();
- 
             $password = $hasher->hashPassword($user, $user->getPassword());
             $user->setPassword($password);
-
-
-            $em->persist($user);
-            $em->flush();
+            $userRepository->save($user,true);
 
             $this->addFlash('success', "L'utilisateur a bien été ajouté.");
 
@@ -59,7 +55,7 @@ class UserController extends AbstractController
     /**
      * @Route("/users/{id}/edit", name="user_edit")
      */
-    public function editAction(User $user, Request $request,ManagerRegistry $managerRegistry,UserPasswordHasherInterface $userPasswordHasherInterface)
+    public function editAction(User $user, Request $request,userRepository $userRepository,UserPasswordHasherInterface $userPasswordHasherInterface)
     {
         $form = $this->createForm(UserType::class, $user);
 
@@ -69,8 +65,7 @@ class UserController extends AbstractController
             //SHOULD NOT BE IN A CONTROLLER
             $password = $userPasswordHasherInterface->hashPassword($user, $user->getPassword());
             $user->setPassword($password);
-
-            $managerRegistry->getManager()->flush();
+            $userRepository->save($user,true);
 
             $this->addFlash('success', "L'utilisateur a bien été modifié");
 
