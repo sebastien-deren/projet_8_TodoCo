@@ -16,7 +16,7 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
  * @UniqueEntity("email")
  * @UniqueEntity("username")
  */
-class User implements UserInterface,PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Column(type="integer")
@@ -47,7 +47,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
     {
         return $this->id;
     }
-    public function getUserIdentifier():string
+    public function getUserIdentifier(): string
     {
         return $this->username;
     }
@@ -67,7 +67,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         return null;
     }
 
-    public function getPassword():?string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -87,7 +87,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         $this->email = $email;
     }
 
-    public function getRoles():array
+    public function getRoles(): array
     {
         return array('ROLE_USER');
     }

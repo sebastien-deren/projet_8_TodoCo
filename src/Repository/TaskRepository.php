@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Task;
@@ -22,8 +24,7 @@ class TaskRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $manager)
     {
-        parent::__construct($manager,task::class);
-        
+        parent::__construct($manager, task::class);
     }
     public function save(Task $entity, bool $flush = false): void
     {
@@ -42,5 +43,4 @@ class TaskRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
 }
