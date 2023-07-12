@@ -48,7 +48,7 @@ class TaskControllerTest extends WebTestCase
      * @dataProvider formProvider
      *
      */
-    public function testCreate(string $title,string $content, bool $isValid)
+    public function testCreate(string $title, string $content, bool $isValid)
     {
         $expectedEntityCount = $this->taskRepository->count([]);
         $this->loginInAsUser($this->em);
@@ -64,18 +64,17 @@ class TaskControllerTest extends WebTestCase
 
 
         $crawler = $this->client->submit($form);
-        if($isValid){
+        if ($isValid) {
             $expectedEntityCount++;
             $this->assertResponseStatusCodeSame(302);
             $crawler = $this->client->followRedirect();
             $this->assertResponseStatusCodeSame(200);
             $this->assertNotEmpty($this->taskRepository->findByTitle($title));
-        }
-        else{
+        } else {
             $this->assertStringContainsString('devez saisir', $crawler->filter('form')->text());
             $this->assertGreaterThanOrEqual(1, $crawler->filter('ul li')->count());
         }
-        $this->assertSame($expectedEntityCount,$this->taskRepository->count([]));
+        $this->assertSame($expectedEntityCount, $this->taskRepository->count([]));
     }
 
     /**
@@ -115,19 +114,19 @@ class TaskControllerTest extends WebTestCase
     /**
      *
      */
-    public function testToggle(){
+    public function testToggle()
+    {
         $this->loginInAsUser($this->em);
-        $task= $this->taskRepository->findAll()[0];
-        $isDone= $task->isDone();
-        $this->client->request('GET','tasks/'.$task->getId().'/toggle');
+        $task = $this->taskRepository->findAll()[0];
+        $isDone = $task->isDone();
+        $this->client->request('GET', 'tasks/' . $task->getId() . '/toggle');
         $this->assertResponseStatusCodeSame(302);
         $crawler = $this->client->followRedirect();
         $this->assertResponseStatusCodeSame(200);
-        $this->assertEquals(!$isDone,$task->isDone()); 
-        $this->assertSelectorTextContains('.alert','a bien été marquée comme faite');
-        
-        $task = $this->taskRepository->find($task->getId());
+        $this->assertEquals(!$isDone, $task->isDone());
+        $this->assertSelectorTextContains('.alert', 'a bien été marquée comme faite');
 
+        $task = $this->taskRepository->find($task->getId());
     }
     /**
      *
@@ -136,12 +135,12 @@ class TaskControllerTest extends WebTestCase
     {
         $expectedEntityCount = $this->taskRepository->count([]);
         $this->loginInAsUser($this->em);
-        $task=$this->taskRepository->findAll()[0];
-        $this->client->request('GET','tasks/'.$task->getId().'/delete');
+        $task = $this->taskRepository->findAll()[0];
+        $this->client->request('GET', 'tasks/' . $task->getId() . '/delete');
         $this->assertResponseStatusCodeSame(302);
         $crawler = $this->client->followRedirect();
         $this->assertResponseStatusCodeSame(200);
-        $this->assertEquals($expectedEntityCount-1,$this->taskRepository->count([]));
+        $this->assertEquals($expectedEntityCount - 1, $this->taskRepository->count([]));
     }
     public function formProvider()
     {

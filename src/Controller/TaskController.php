@@ -5,10 +5,7 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Service\TaskService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +24,7 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/create", name="task_create")
      */
-    public function createAction(Request $request, TaskRepository $taskRepository)
+    public function createAction(Request $request, TaskService $taskService)
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -35,8 +32,8 @@ class TaskController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //JUST CALL A SERVICE
-            $taskRepository->save($task, true);
+
+            $taskService->saveTask($task);
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
@@ -49,15 +46,14 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
      */
-    public function editAction(Task $task, Request $request, TaskRepository $taskRepository)
+    public function editAction(Task $task, Request $request, TaskService $taskService)
     {
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //NOT IN CONTROLLER
-            $taskRepository->save($task, true);
+            $taskService->saveTask($task);
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
 
@@ -73,11 +69,9 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/toggle", name="task_toggle")
      */
-    public function toggleTaskAction(Task $task, TaskRepository $taskRepository)
+    public function toggleTaskAction(Task $task, TaskService $taskService)
     {
-        //ALL THAT AS NO PLACE IN CONTROLLER
-        $task->toggle(!$task->isDone());
-        $taskRepository->save($task, true);
+        $taskService->toggle($task);
 
         $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
 
@@ -87,10 +81,10 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
-    public function deleteTaskAction(Task $task, TaskRepository $taskRepository)
+    public function deleteTaskAction(Task $task, TaskService $taskService)
     {
-        //NOT IN CONTROLLER
-        $taskRepository->remove($task, true);
+
+        $taskService->removeTask($task);
 
         $this->addFlash('success', 'La tâche a bien été supprimée.');
 
