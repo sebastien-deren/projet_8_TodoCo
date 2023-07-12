@@ -43,13 +43,18 @@
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^7.2",
+        "rector/rector": "*",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "6.3.*",
         "symfony/css-selector": "6.3.*",
         "symfony/maker-bundle": "^1.39",
         "symfony/phpunit-bridge": "^6.3",
+        "symfony/maker-bundle": "^1.39",
+        "symfony/phpunit-bridge": "^6.3",
         "symfony/stopwatch": "^5.4",
-        "symfony/web-profiler-bundle": "^5.0"
+        "symfony/web-profiler-bundle": "^5.0",
+        "symfony/browser-kit": "6.3.*",
+        "symfony/css-selector": "6.3.*"
     },
     "scripts": {
         "post-install-cmd": [

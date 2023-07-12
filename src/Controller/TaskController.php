@@ -14,18 +14,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TaskController extends AbstractController
 {
-    /**
-     * @Route("/tasks", name="task_list")
-     */
-    public function listAction(ManagerRegistry $managerRegistry)
+    #[Route(path: '/tasks', name: 'task_list')]
+    public function listAction(ManagerRegistry $managerRegistry): \Symfony\Component\HttpFoundation\Response
     {
         return $this->render('task/list.html.twig', ['tasks' => $managerRegistry->getRepository(Task::class)->findAll()]);
     }
 
-    /**
-     * @Route("/tasks/create", name="task_create")
-     */
-    public function createAction(Request $request,ManagerRegistry $managerRegistry)
+    #[Route(path: '/tasks/create', name: 'task_create')]
+    public function createAction(Request $request,ManagerRegistry $managerRegistry): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -47,10 +43,8 @@ class TaskController extends AbstractController
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
-    /**
-     * @Route("/tasks/{id}/edit", name="task_edit")
-     */
-    public function editAction(Task $task, Request $request,ManagerRegistry $managerRegistry)
+    #[Route(path: '/tasks/{id}/edit', name: 'task_edit')]
+    public function editAction(Task $task, Request $request,ManagerRegistry $managerRegistry): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $form = $this->createForm(TaskType::class, $task);
 
@@ -71,10 +65,8 @@ class TaskController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/tasks/{id}/toggle", name="task_toggle")
-     */
-    public function toggleTaskAction(Task $task,ManagerRegistry $managerRegistry)
+    #[Route(path: '/tasks/{id}/toggle', name: 'task_toggle')]
+    public function toggleTaskAction(Task $task,ManagerRegistry $managerRegistry): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         //ALL THAT AS NO PLACE IN CONTROLLER
         $task->toggle(!$task->isDone());
@@ -85,10 +77,8 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('task_list');
     }
 
-    /**
-     * @Route("/tasks/{id}/delete", name="task_delete")
-     */
-    public function deleteTaskAction(Task $task,ManagerRegistry $managerRegistry)
+    #[Route(path: '/tasks/{id}/delete', name: 'task_delete')]
+    public function deleteTaskAction(Task $task, ManagerRegistry $managerRegistry): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         //NOT IN CONTROLLER
         $em = $managerRegistry->getManager();
