@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Task;
+use App\Entity\User;
 use App\Repository\TaskRepository;
 
 class TaskService
@@ -15,6 +16,14 @@ class TaskService
     {
         $task->toggle(!$task->isDone());
         $this->saveTask($task);
+    }
+    public function createTask(Task $task,User|null $currentUser){
+        if(\is_null($currentUser)){
+            $currentUser = $this->taskRepository->findOneByUsername('anonymous');
+        }
+        $task->setCreator($currentUser);
+        $this->saveTask($task);
+
     }
     public function saveTask(Task $task)
     {
