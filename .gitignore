@@ -16,6 +16,14 @@
 /web/bundles/
 /mysql/
 /docker/
+
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+/tests/coverage
+###< symfony/phpunit-bridge ###
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php

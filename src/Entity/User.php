@@ -8,39 +8,27 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
-use function Symfony\Component\DependencyInjection\Loader\Configurator\ref;
-
-/**
- * @ORM\Table("user_app")
- * @ORM\Entity
- * @UniqueEntity("email")
- * @UniqueEntity("username")
- */
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\Entity]
+#[UniqueEntity('email')]
+#[UniqueEntity('username')]
+#[ORM\Table('user_app')]
+class User implements UserInterface,PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=25, unique=true)
-     * @Assert\NotBlank(message="Vous devez saisir un nom d'utilisateur.")
-     */
-    private $username;
+    #[ORM\Column(type: 'string', length: 25, unique: true)]
+    #[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.")]
+    private string $username;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
-    private $password;
+    #[ORM\Column(type: 'string', length: 64)]
+    private ?string $password = null;
 
-    /**
-     * @ORM\Column(type="string", length=60, unique=true)
-     * @Assert\NotBlank(message="Vous devez saisir une adresse email.")
-     * @Assert\Email(message="Le format de l'adresse n'est pas correcte.")
-     */
+    #[ORM\Column(type: 'string', length: 60, unique: true)]
+    #[Assert\NotBlank(message: 'Vous devez saisir une adresse email.')]
+    #[Assert\Email(message: "Le format de l'adresse n'est pas correcte.")]
     private $email;
 
     public function getId()
@@ -57,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->username;
     }
 
-    public function setUsername($username)
+    public function setUsername($username): void
     {
         $this->username = $username;
     }
@@ -72,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword($password)
+    public function setPassword($password): void
     {
         $this->password = $password;
     }
@@ -82,7 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function setEmail($email)
+    public function setEmail($email): void
     {
         $this->email = $email;
     }
@@ -92,7 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array('ROLE_USER');
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
     }
 }

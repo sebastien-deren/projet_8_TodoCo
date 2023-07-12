@@ -19,18 +19,14 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserController extends AbstractController
 {
-    /**
-     * @Route("/users", name="user_list")
-     */
-    public function listAction(UserRepository $userRepository)
+    #[Route(path: '/users', name: 'user_list')]
+    public function listAction(UserRepository $userRepository): \Symfony\Component\HttpFoundation\Response
     {
         return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
     }
 
-    /**
-     * @Route("/users/create", name="user_create")
-     */
-    public function createAction(Request $request, SecurityService $securityService)
+    #[Route(path: '/users/create', name: 'user_create')]
+    public function createAction(Request $request, SecurityService $securityService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
 
         $user = new User();
@@ -51,10 +47,8 @@ class UserController extends AbstractController
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);
     }
 
-    /**
-     * @Route("/users/{id}/edit", name="user_edit")
-     */
-    public function editAction(User $user, Request $request,SecurityService $securityService)
+    #[Route(path: '/users/{id}/edit', name: 'user_edit')]
+    public function editAction(User $user, Request $request,SecurityService $securityService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $form = $this->createForm(UserType::class, $user);
 
