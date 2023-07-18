@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Repository\UserRepository;
 use App\Service\TaskService;
+use App\Service\UserService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,8 +72,15 @@ class TaskController extends AbstractController
     }
 
     #[Route(path: '/tasks/{id}/delete', name: 'task_delete',methods:['POST'])]
-    public function deleteTaskAction(Task $task, TaskService $taskService)
+    public function deleteTaskAction(Task $task, TaskService $taskService,UserService $userService)
     {
+        $isDeletable = $userService->canDeleteTask($task->getCreator(),$this->getUser(),$this->isGranted('ROLE_ADMIN'));
+        if(!$isDeletable)
+        {
+            $this->addFlash('warning','Vous n\'avez pas les droits pour supprimer cette tâche');
+            return $this->redirectToRoute('task_list');
+
+        }
 
         $taskService->removeTask($task);
 
