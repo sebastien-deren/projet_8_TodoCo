@@ -16,10 +16,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
 {
     #[Route(path: '/users', name: 'user_list')]
+    #[IsGranted('ROLE_ADMIN')]
     public function listAction(UserRepository $userRepository): \Symfony\Component\HttpFoundation\Response
     {
         return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
@@ -48,6 +50,7 @@ class UserController extends AbstractController
     }
 
     #[Route(path: '/users/{id}/edit', name: 'user_edit')]
+    #[IsGranted('ROLE_ADMIN')]
     public function editAction(User $user, Request $request,SecurityService $securityService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $form = $this->createForm(UserType::class, $user);

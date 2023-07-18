@@ -4,8 +4,8 @@ namespace App\Service;
 
 use App\Entity\Task;
 use App\Entity\User;
+use App\Service\UserService;
 use App\Repository\TaskRepository;
-use UserService;
 
 class TaskService
 {
