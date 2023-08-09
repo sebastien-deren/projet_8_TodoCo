@@ -22,7 +22,7 @@ class UserFixtures extends Fixture
         $user= new User();
         $user->setEmail("email@g.com");
         $user->setPassword($this->hasher->hashPassword($user,"password"));
-        $user->setUsername("seb");
+        $user->setUsername("admin");
         $user->setRoles(['ROLE_USER','ROLE_ADMIN']);
         $manager->persist($user);
         $user= new User();
@@ -30,7 +30,12 @@ class UserFixtures extends Fixture
         $user->setPassword("test");
         $user->setUsername("test");
         $manager->persist($user);
-
+        $user = new User();
+        $user->setUsername('user');
+        $user->setEmail('user@g.com');
+        $user->setPassword($this->hasher->hashPassword($user,"password"));
+        $user->setRoles(['ROLE_USER']);
+        $manager->persist($user);
         $manager->flush();
     }
 }

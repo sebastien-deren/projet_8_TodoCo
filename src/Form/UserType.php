@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Enum\Role;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -26,7 +27,13 @@ class UserType extends AbstractType
                 'second_options' => ['label' => 'Tapez le mot de passe à nouveau'],
             ])
             ->add('email', EmailType::class, ['label' => 'Adresse email'])
-            ->add('roles', EnumType::class,['class'=> Role::class, 'mapped'=>false ])
+            ->add('roles', ChoiceType::class,[
+            'choices' => [
+            Role::Admin->name => Role::Admin->value,
+            Role::User->name => Role::User->value    
+            ],
+            'mapped'=>false,
+            'empty_data'=> Role::User->value])
         ;
     }
 }

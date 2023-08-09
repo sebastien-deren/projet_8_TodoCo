@@ -20,6 +20,7 @@ class UserControllerTest extends WebTestCase
     private KernelBrowser $client;
     private ObjectManager $em;
     private EntityRepository $userRepository;
+    private User $user;
 
     use SecurityTrait;
 
@@ -29,7 +30,8 @@ class UserControllerTest extends WebTestCase
         $this->em = $this->client->getContainer()->get('doctrine')->getManager();
         $this->userRepository = $this->em->getRepository(User::class);
         //we can asume we are always connected for our Tests and tests the firewall in SecurityController
-        $this->loginInAsUser($this->em);
+        $this->user = $this->loginInAsUser($this->em,'admin');
+        $this->assertContains('ROLE_ADMIN',$this->user->getRoles());
     }
     /**
      * 
@@ -94,7 +96,7 @@ class UserControllerTest extends WebTestCase
             [$this->createForm('test2', 'mdp', 'vraimail@g.com', 'paslemêmemdp'), false],
             /* The line above throw an Exception we should can and will catch this (we just need to set it to unique)
             By creating a new \** @uniqueEntity(username) in our entity*/
-            [$this->createForm('seb', 'mdp', 'vraimail@g.com'), false], //same name as another fixtures*/
+            [$this->createForm('admin', 'mdp', 'vraimail@g.com'), false], //same name as another fixtures*/
             [$this->createForm('test2', 'mdp', 'email@g.com'), false] //same mail as another fixtures
 
         ];

@@ -11,11 +11,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
+use function PHPUnit\Framework\isNull;
+
 #[ORM\Entity]
 #[UniqueEntity('email')]
 #[UniqueEntity('username')]
 #[ORM\Table('user_app')]
-class User implements UserInterface,PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Column(type: 'integer')]
     #[ORM\Id]
@@ -37,7 +39,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Task::class, orphanRemoval: true)]
     private Collection $tasks;
 
-    #[ORM\Column(type: Types::SIMPLE_ARRAY,nullable:true)]
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
     private array $roles = [];
 
     public function __construct()
@@ -95,12 +97,13 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
-    public function setRoles(array|string $roles):self
+    public function setRoles(array|string $roles): self
     {
-        if(is_string($roles)){
-            $roles = [$roles];
+        if (is_string($roles)) {
+            $this->roles[] = $roles;
+        } else {
+            $this->roles = $roles;
         }
-        $this->roles = $roles;
         return $this;
     }
 

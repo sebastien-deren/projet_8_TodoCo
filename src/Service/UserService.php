@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace App\Service;
 
+use App\Entity\Task;
 use App\Entity\User;
 use App\Repository\UserRepository;
 
@@ -17,5 +18,17 @@ class UserService{
         $anon->setUsername('anonymous');
         $this->userRepository->save($anon,true);
         return $anon;
+    }
+    public function canDeleteTask(User $creator,User $user,bool $isAdmin):bool
+    {
+        if($isAdmin && 'anonymous'===$creator->getUsername()){
+            return true;
+        }
+        if($creator == $user ){
+            return true;
+        }
+        return false;
+
+
     }
 }
