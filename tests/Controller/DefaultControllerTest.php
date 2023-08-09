@@ -5,13 +5,11 @@ namespace Tests\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpClient\HttpClient;
 
+
 class DefaultControllerTest extends WebTestCase
 {
-    private HttpClient $client;
-    public function setup(){
-        $this->client = static::createClient();
 
-    }
+
     public function testIndex()
     {
         $client = static::createClient();

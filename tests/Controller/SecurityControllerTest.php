@@ -52,22 +52,22 @@ class SecurityControllerTest extends WebTestCase
      *
      * @dataProvider routesForbiddenProvider
      */
-    public function testLogoutCheck(string $route)
+    public function testLogoutCheck(string $route,string $method)
     {
         $expectedCrawler = $this->client->request('GET', '/login');
         $this->loginInAsUser($this->em);
         $this->client->request('GET', '/logout');
-        $this->client->request('GET', $route);
+        $this->client->request($method, $route);
         $crawler = $this->client->followRedirect();
         $this->assertEquals($expectedCrawler->text(), $crawler->text());
     }
     /**
      * @dataProvider routesForbiddenProvider
      */
-    public function testFirewall(string $route)
+    public function testFirewall(string $route,string $method)
     {
         $expectedCrawler = $this->client->request('GET', '/login');
-        $this->client->request('GET', $route);
+        $this->client->request($method, $route);
         $crawler = $this->client->followRedirect();
         $this->assertEquals($expectedCrawler->text(), $crawler->text());
     }
@@ -75,13 +75,13 @@ class SecurityControllerTest extends WebTestCase
     public function routesForbiddenProvider()
     {
         return array(
-            array('/tasks'),
-            array('/tasks/create'),
-            array('/tasks/1/toggle'),
-            array('tasks/1/delete'),
-            array('/tasks/1/edit'),
-            array('/users/1/edit'),
-            array('/users'),
+            array('/tasks','GET'),
+            array('/tasks/create','GET'),
+            array('/tasks/1/toggle','POST'),
+            array('tasks/1/delete','POST'),
+            array('/tasks/1/edit','GET'),
+            array('/users/1/edit','GET'),
+            array('/users','GET'),
         );
     }
     public function routesAuthorizedProvider()
