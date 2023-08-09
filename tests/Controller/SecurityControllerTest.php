@@ -34,7 +34,7 @@ class SecurityControllerTest extends WebTestCase
     public function testLoginAction(string|Closure $route, string $class = null)
     {
 
-        $user = $this->em->getRepository(User::class)->findOneByUsername('seb');
+        $user = $this->em->getRepository(User::class)->findOneByUsername('admin');
         $crawler = $this->client->request('GET', '/login');
         $this->assertResponseStatusCodeSame(200);
         $form = $crawler->selectButton('Se connecter')->form();
@@ -77,8 +77,8 @@ class SecurityControllerTest extends WebTestCase
         return array(
             array('/tasks','GET'),
             array('/tasks/create','GET'),
-            array('/tasks/1/toggle','POST'),
-            array('tasks/1/delete','POST'),
+            array('/tasks/1/toggle','GET'),
+            array('tasks/1/delete','GET'),
             array('/tasks/1/edit','GET'),
             array('/users/1/edit','GET'),
             array('/users','GET'),

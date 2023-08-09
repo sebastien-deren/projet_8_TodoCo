@@ -100,6 +100,11 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         $this->roles = $roles;
         return $this;
     }
+    public function setRole(string $role):self
+    {
+        $this->roles[]=$role;
+        return $this;
+    }
 
     public function eraseCredentials(): void
     {
