@@ -120,7 +120,7 @@ class TaskControllerTest extends WebTestCase
         $this->loginInAsUser($this->em);
         $task = $this->taskRepository->findAll()[0];
         $isDone = $task->isDone();
-        $this->client->request('POST', 'tasks/' . $task->getId() . '/toggle');
+        $this->client->request('GET', 'tasks/' . $task->getId() . '/toggle');
         $this->assertResponseStatusCodeSame(302);
         $crawler = $this->client->followRedirect();
         $this->assertResponseStatusCodeSame(200);

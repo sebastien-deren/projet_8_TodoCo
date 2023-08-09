@@ -6,6 +6,7 @@ namespace Tests\Controller;
 
 use App\Entity\Task;
 use App\Entity\User;
+use App\Enum\Role;
 use Closure;
 use Doctrine\ORM\EntityManager;
 use PhpParser\Node\Expr\Instanceof_;
@@ -31,7 +32,7 @@ class SecurityControllerTest extends WebTestCase
      * @dataProvider routesAuthorizedProvider
      *
      */
-    public function testLoginAction(string|Closure $route, string $class = null)
+    public function testLoginActionAdmin(string|Closure $route,Role $role, string $class = null)
     {
 
         $user = $this->em->getRepository(User::class)->findOneByUsername('admin');
@@ -45,8 +46,43 @@ class SecurityControllerTest extends WebTestCase
         $expectedCrawler = $this->client->request('GET', '/');
         $this->assertSame($expectedCrawler->getUri(), $crawler->getUri());
         $computedRoute = ($route instanceof Closure) ? $route($this->getId($class)) : $route;
+        $this->accessAuthorized($computedRoute);
+
+    }
+        /**
+     * @dataProvider routesAuthorizedProvider
+     *
+     */
+    public function testLoginActionUser(string|Closure $route, Role $role, string $class =null)
+    {
+
+        $user = $this->em->getRepository(User::class)->findOneByUsername('user');
+        $crawler = $this->client->request('GET', '/login');
+        $this->assertResponseStatusCodeSame(200);
+        $form = $crawler->selectButton('Se connecter')->form();
+        $this->assertNotNull($form);
+        $form->setValues(["_username" => $user->getUsername(), "_password" => "password"]);
+        $crawler = $this->client->submit($form);
+        $crawler = $this->client->followRedirect();
+        $expectedCrawler = $this->client->request('GET', '/');
+        $this->assertSame($expectedCrawler->getUri(), $crawler->getUri());
+        $computedRoute = ($route instanceof Closure) ? $route($this->getId($class)) : $route;
+        if($role === Role::Admin){
+            $this->accessDenied($computedRoute);
+        }
+        else{
+            $this->accessAuthorized($computedRoute);
+        }
+    }
+    public function accessAuthorized(string $computedRoute)
+    {
         $crawler = $this->client->request('GET', $computedRoute);
         $this->assertResponseStatusCodeSame(200);
+    }
+    public function accessDenied(string $computedRoute)
+    {
+        $crawler = $this->client->request('GET', $computedRoute);
+        $this->assertResponseStatusCodeSame(403);
     }
     /**
      *
@@ -87,11 +123,11 @@ class SecurityControllerTest extends WebTestCase
     public function routesAuthorizedProvider()
     {
         return array(
-            array('/tasks'),
-            array('/tasks/create'),
-            array('/users'),
-            array(fn ($id) => 'tasks/' . $id . '/edit', Task::class),
-            array(fn ($id) => 'users/' . $id . '/edit', User::class),
+            array('/tasks',Role::User),
+            array('/tasks/create',Role::User),
+            array('/users',Role::Admin),
+            array(fn ($id) => 'tasks/' . $id . '/edit',Role::User ,Task::class),
+            array(fn ($id) => 'users/' . $id . '/edit',Role::Admin, User::class),
         );
     }
     private function getId($class): int
