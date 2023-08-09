@@ -24,8 +24,6 @@ class UserFixtures extends Fixture
         $user->setPassword($this->hasher->hashPassword($user,"password"));
         $user->setUsername("seb");
         $manager->persist($user);
-        // $product = new Product();
-        // $manager->persist($product);
         $user= new User();
         $user->setEmail("test@g.com");
         $user->setPassword("test");
