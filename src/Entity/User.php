@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -35,6 +36,9 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Task::class, orphanRemoval: true)]
     private Collection $tasks;
+
+    #[ORM\Column(type: Types::SIMPLE_ARRAY,nullable:true)]
+    private array $roles = [];
 
     public function __construct()
     {
@@ -87,7 +91,17 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return array('ROLE_USER');
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
+    }
+    public function setRoles(array|string $roles):self
+    {
+        if(is_string($roles)){
+            $roles = [$roles];
+        }
+        $this->roles = $roles;
+        return $this;
     }
 
     public function eraseCredentials(): void
