@@ -95,8 +95,11 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
-    public function setRoles(array $roles):self
+    public function setRoles(array|string $roles):self
     {
+        if(is_string($roles)){
+            $roles = [$roles];
+        }
         $this->roles = $roles;
         return $this;
     }
