@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity]
 #[UniqueEntity('email')]
+#[UniqueEntity('username')]
 #[ORM\Table('user_app')]
 class User implements UserInterface,PasswordAuthenticatedUserInterface
 {
@@ -34,7 +35,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
     {
         return $this->id;
     }
-    public function getUserIdentifier():string
+    public function getUserIdentifier(): string
     {
         return $this->username;
     }
@@ -54,7 +55,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         return null;
     }
 
-    public function getPassword():?string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -74,7 +75,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         $this->email = $email;
     }
 
-    public function getRoles():array
+    public function getRoles(): array
     {
         return array('ROLE_USER');
     }
