@@ -104,7 +104,7 @@ class UserControllerTest extends WebTestCase
         return [
             "user" => [
                 "username" => $username,
-                "password" => [
+                "clear_password" => [
                     "first" => $password,
                     "second" => $secondPassword ?? $password,
                 ],

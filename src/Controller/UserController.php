@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Repository\UserRepository;
+use App\Service\SecurityService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,31 +20,24 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserController extends AbstractController
 {
     #[Route(path: '/users', name: 'user_list')]
-    public function listAction(ManagerRegistry $managerRegistry): \Symfony\Component\HttpFoundation\Response
+    public function listAction(UserRepository $userRepository): \Symfony\Component\HttpFoundation\Response
     {
-        return $this->render('user/list.html.twig', ['users' => $managerRegistry->getRepository(User::class)->findAll()]);
+        return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
     }
 
     #[Route(path: '/users/create', name: 'user_create')]
-    public function createAction(Request $request, UserPasswordHasherInterface $hasher,ManagerRegistry $managerRegistry): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    public function createAction(Request $request, SecurityService $securityService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
 
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
-        $form->handleRequest($request);          
+        $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            //SHOULD NOT BE IN A CONTROLLER
-            $em = $managerRegistry->getManager();
- 
-            $password = $hasher->hashPassword($user, $user->getPassword());
-            $user->setPassword($password);
-
-
-            $em->persist($user);
-            $em->flush();
+            $securityService->setPassword($user,$form->get('clear_password')->getData());
+            $securityService->saveUser($user);
 
             $this->addFlash('success', "L'utilisateur a bien été ajouté.");
 
@@ -53,18 +48,16 @@ class UserController extends AbstractController
     }
 
     #[Route(path: '/users/{id}/edit', name: 'user_edit')]
-    public function editAction(User $user, Request $request,ManagerRegistry $managerRegistry,UserPasswordHasherInterface $userPasswordHasherInterface): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    public function editAction(User $user, Request $request,SecurityService $securityService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //SHOULD NOT BE IN A CONTROLLER
-            $password = $userPasswordHasherInterface->hashPassword($user, $user->getPassword());
-            $user->setPassword($password);
 
-            $managerRegistry->getManager()->flush();
+            $securityService->setPassword($user,$form->get('clear_password')->getData());
+            $securityService->saveUser($user);
 
             $this->addFlash('success', "L'utilisateur a bien été modifié");
 

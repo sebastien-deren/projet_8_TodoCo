@@ -56,11 +56,10 @@ class SecurityControllerTest extends WebTestCase
     {
         $expectedCrawler = $this->client->request('GET', '/login');
         $this->loginInAsUser($this->em);
-        $this->client->request('GET','/logout');
+        $this->client->request('GET', '/logout');
         $this->client->request('GET', $route);
         $crawler = $this->client->followRedirect();
         $this->assertEquals($expectedCrawler->text(), $crawler->text());
-
     }
     /**
      * @dataProvider routesForbiddenProvider
