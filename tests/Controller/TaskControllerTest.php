@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Tests\Controller;
 
 use App\Entity\Task;
-use Doctrine\ORM\EntityRepository;
+use App\Entity\User;
 use Tests\Security\SecurityTrait;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -119,7 +120,7 @@ class TaskControllerTest extends WebTestCase
         $this->loginInAsUser($this->em);
         $task = $this->taskRepository->findAll()[0];
         $isDone = $task->isDone();
-        $this->client->request('POST', 'tasks/' . $task->getId() . '/toggle');
+        $this->client->request('GET', 'tasks/' . $task->getId() . '/toggle');
         $this->assertResponseStatusCodeSame(302);
         $crawler = $this->client->followRedirect();
         $this->assertResponseStatusCodeSame(200);
@@ -131,16 +132,46 @@ class TaskControllerTest extends WebTestCase
     /**
      *
      */
-    public function testDeleteTask()
+    public function testDeleteTaskAdmin()
     {
         $expectedEntityCount = $this->taskRepository->count([]);
-        $this->loginInAsUser($this->em);
-        $task = $this->taskRepository->findAll()[0];
-        $this->client->request('POST', 'tasks/' . $task->getId() . '/delete');
+        $admin = $this->loginInAsUser($this->em,'admin');
+        $this->assertContains('ROLE_ADMIN',$admin->getRoles());
+        $task = $this->taskRepository->findOneByCreator($this->em->getRepository(User::class)->findOneByUsername('anonymous'));
+        $taskId = $task->getId();
+        $this->assertNotNull($task);
+        $this->client->request('GET', 'tasks/' . $task->getId() . '/delete');
         $this->assertResponseStatusCodeSame(302);
         $crawler = $this->client->followRedirect();
         $this->assertResponseStatusCodeSame(200);
+        $this->assertNull($this->taskRepository?->find($taskId));
         $this->assertEquals($expectedEntityCount - 1, $this->taskRepository->count([]));
+    }
+    public function testDeleteTaskLinkedToUser()
+    {
+
+        $user = $this->loginInAsUser($this->em);
+        $task = $this->createTask($user);
+        $expectedEntityCount = $this->taskRepository->count([]);
+        $this->assertContains('ROLE_USER',$user->getRoles());
+        $this->assertSame($user->getUsername(),$task->getCreator()->getUsername());
+        $this->client->request('GET', 'tasks/' . $task->getId() . '/delete');
+        $this->assertResponseStatusCodeSame(302);
+        $crawler = $this->client->followRedirect();
+        $this->assertStringNotContainsString('Vous n\'avez pas les droits', $crawler->html());
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertEquals($expectedEntityCount - 1, $this->taskRepository->count([]));   
+
+    }
+    public function createTask(User $user):Task
+    {
+        $task = new Task;
+        $task->setContent('coucou');
+        $task->setCreator($user);
+        $task->setTitle('YES');
+        $this->em->persist($task);
+        $this->em->flush();
+        return $task;
     }
     public function formProvider()
     {
