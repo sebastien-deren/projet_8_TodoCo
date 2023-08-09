@@ -6,7 +6,12 @@
 {% block body %}
     <div class="row">
         {{ form_start(form, {'action' : path('user_edit', {'id' : user.id})}) }}
-        {{ form_widget(form) }}
+		{{ form_row(form.username) }}
+		{{ form_row(form.clear_password)}}
+		{{ form_row(form.email) }}
+		{% if not is_granted('ROLE_ADMIN') %}
+            {% do form.roles.setRendered() %}
+		{% endif %}
 
         <button type="submit" class="btn btn-success pull-right">Modifier</button>
         {{ form_end(form) }}

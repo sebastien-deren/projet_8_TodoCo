@@ -59,7 +59,7 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/tasks/{id}/toggle', name: 'task_toggle',methods:['POST'])]
+    #[Route(path: '/tasks/{id}/toggle', name: 'task_toggle',methods:['GET'])]
     public function toggleTaskAction(Task $task,TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $taskService->toggle($task);
@@ -69,7 +69,7 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('task_list');
     }
 
-    #[Route(path: '/tasks/{id}/delete', name: 'task_delete',methods:['POST'])]
+    #[Route(path: '/tasks/{id}/delete', name: 'task_delete',methods:['GET'])]
     public function deleteTaskAction(Task $task, TaskService $taskService)
     {
 
