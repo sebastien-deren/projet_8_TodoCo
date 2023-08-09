@@ -37,7 +37,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $user->setRoles($form->get('roles')->getData());
             $securityService->setPassword($user,$form->get('clear_password')->getData());
             $securityService->saveUser($user);
 
@@ -58,7 +58,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $user->setRoles($form->get('roles')->getData());
             $securityService->setPassword($user,$form->get('clear_password')->getData());
             $securityService->saveUser($user);
 
