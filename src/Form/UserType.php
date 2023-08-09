@@ -26,7 +26,7 @@ class UserType extends AbstractType
                 'second_options' => ['label' => 'Tapez le mot de passe à nouveau'],
             ])
             ->add('email', EmailType::class, ['label' => 'Adresse email'])
-            ->add('roles', EnumType::class,['class'=> Role::class, 'mapped'=>false ])
+            ->add('roles', EnumType::class,['class'=> Role::class, 'mapped'=>false,'empty_data'=>'ROLE_USER' ])
         ;
     }
 }

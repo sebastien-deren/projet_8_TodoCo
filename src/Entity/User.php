@@ -11,6 +11,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
+use function PHPUnit\Framework\isNull;
+
 #[ORM\Entity]
 #[UniqueEntity('email')]
 #[UniqueEntity('username')]
@@ -95,7 +97,7 @@ class User implements UserInterface,PasswordAuthenticatedUserInterface
         $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
-    public function setRoles(array|string $roles):self
+    public function setRoles(array|string|null $roles):self
     {
         if(is_string($roles)){
             $this->roles[] = $roles;
