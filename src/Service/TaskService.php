@@ -6,6 +6,7 @@ use App\Entity\Task;
 use App\Entity\User;
 use App\Service\UserService;
 use App\Repository\TaskRepository;
+use App\Repository\UserRepository;
 
 class TaskService
 {
@@ -22,7 +23,7 @@ class TaskService
     public function createTask(Task $task,User|null $currentUser):void
     {
         if(\is_null($currentUser)){
-            $currentUser = $this->taskRepository->findOneByUsername('anonymous') ?? $this->userService->createAnon();
+            $currentUser = $this->userService->getAnon();
         }
         $task->setCreator($currentUser);
         $this->saveTask($task);

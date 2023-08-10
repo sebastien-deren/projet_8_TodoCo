@@ -6,10 +6,10 @@ namespace Tests\Controller;
 
 use App\Entity\Task;
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
 use Tests\Security\SecurityTrait;
+use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -19,6 +19,9 @@ class TaskControllerTest extends WebTestCase
 
     private KernelBrowser $client;
     private EntityManagerInterface $em;
+    /**
+     * @var TaskRepository $taskRepository
+     */
     private EntityRepository $taskRepository;
 
 

@@ -8,6 +8,7 @@ use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
 use App\Service\TaskService;
 use App\Service\UserService;
+use Exception;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -75,7 +76,8 @@ class TaskController extends AbstractController
     #[Route(path: '/tasks/{id}/delete', name: 'task_delete',methods:['GET'])]
     public function deleteTaskAction(Task $task, TaskService $taskService,UserService $userService): \Symfony\Component\HttpFoundation\RedirectResponse
     {
-        $isDeletable = $userService->canDeleteTask($task->getCreator(),$this->getUser(),$this->isGranted('ROLE_ADMIN'));
+        $user = $this->getUser();
+        $isDeletable = $userService->canDeleteTask($task->getCreator(),$user,$this->isGranted('ROLE_ADMIN'));
         if(!$isDeletable)
         {
             $this->addFlash('error','Vous n\'avez pas les droits pour supprimer cette tâche');

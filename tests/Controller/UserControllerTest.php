@@ -12,7 +12,6 @@ use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\Security\Csrf\CsrfToken;
 
 
 class UserControllerTest extends WebTestCase
@@ -20,6 +19,9 @@ class UserControllerTest extends WebTestCase
 
     private KernelBrowser $client;
     private ObjectManager $em;
+    /**
+     * @var UserRepository $userRepository
+     */
     private EntityRepository $userRepository;
     private User $user;
 

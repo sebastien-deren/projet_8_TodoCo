@@ -19,7 +19,7 @@ class TaskFixtures extends Fixture
     }
     public function load(ObjectManager $manager): void
     {
-        $anonymous = $manager->getRepository(User::class)->findOneBy(['username'=>'anonymous']) ?? $this->userService->createAnon();
+        $anonymous = $this->userService->getAnon();
 
 
         for ($i = 0; $i < 10; $i++) {

@@ -5,12 +5,17 @@ namespace App\Service;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserService{
     public function __construct(private UserRepository $userRepository){
         
     }
-    public function createAnon():User
+    public function getAnon():User
+    {
+        return $this->userRepository->findOneByUsername('anonymous') ?? $this->createAnon();
+    }
+    private function createAnon():User
     {
         $anon = new User();
         $anon->setEmail('anonymous@test.com');

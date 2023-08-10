@@ -1,0 +1,7 @@
+parameters:
+	level: 6
+	paths:
+		- src
+		- tests
+	ignoreErrors:
+		-'#of method [a-zA-Z0-9\\_\(\)\:]+ expects App\\Entity\\User(\|null)?, Symfony\\Component\\Security\\Core\\User\\UserInterface(\|null)?#'
