@@ -6,6 +6,7 @@ namespace Tests\Controller;
 
 use App\Entity\Task;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Tests\Security\SecurityTrait;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectManager;
@@ -17,7 +18,7 @@ class TaskControllerTest extends WebTestCase
 {
 
     private KernelBrowser $client;
-    private ObjectManager $em;
+    private EntityManagerInterface $em;
     private EntityRepository $taskRepository;
 
 
@@ -32,7 +33,7 @@ class TaskControllerTest extends WebTestCase
     /**
      *
      */
-    public function testIndex()
+    public function testIndex():void
     {
         $this->loginInAsUser($this->em);
         //Hardcoding the request URLs is a best practice for application tests. 
@@ -49,7 +50,7 @@ class TaskControllerTest extends WebTestCase
      * @dataProvider formProvider
      *
      */
-    public function testCreate(string $title, string $content, bool $isValid)
+    public function testCreate(string $title, string $content, bool $isValid):void
     {
         $expectedEntityCount = $this->taskRepository->count([]);
         $this->loginInAsUser($this->em);
@@ -82,7 +83,7 @@ class TaskControllerTest extends WebTestCase
      * @dataProvider formProvider
      *
      */
-    public function testEdit(string $title, string $content, bool $validity)
+    public function testEdit(string $title, string $content, bool $validity):void
     {
         $task = $this->taskRepository->findAll()[0];
         $this->loginInAsUser($this->em);
@@ -115,7 +116,7 @@ class TaskControllerTest extends WebTestCase
     /**
      *
      */
-    public function testToggle()
+    public function testToggle():void
     {
         $this->loginInAsUser($this->em);
         $task = $this->taskRepository->findAll()[0];
@@ -132,7 +133,7 @@ class TaskControllerTest extends WebTestCase
     /**
      *
      */
-    public function testDeleteTaskAdmin()
+    public function testDeleteTaskAdmin():void
     {
         $expectedEntityCount = $this->taskRepository->count([]);
         $admin = $this->loginInAsUser($this->em,'admin');
@@ -144,10 +145,10 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(302);
         $crawler = $this->client->followRedirect();
         $this->assertResponseStatusCodeSame(200);
-        $this->assertNull($this->taskRepository?->find($taskId));
+        $this->assertNull($this->taskRepository->find($taskId) ?? null );
         $this->assertEquals($expectedEntityCount - 1, $this->taskRepository->count([]));
     }
-    public function testDeleteTaskLinkedToUser()
+    public function testDeleteTaskLinkedToUser():void
     {
 
         $user = $this->loginInAsUser($this->em);
@@ -173,7 +174,10 @@ class TaskControllerTest extends WebTestCase
         $this->em->flush();
         return $task;
     }
-    public function formProvider()
+    /**
+     * @return array<array<string>>
+     */
+    public function formProvider():array
     {
         return [
             'data-set-Valid' => ['testValid', 'we have change the content', true],

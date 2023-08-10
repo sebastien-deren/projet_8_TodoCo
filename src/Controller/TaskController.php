@@ -10,6 +10,7 @@ use App\Service\TaskService;
 use App\Service\UserService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class TaskController extends AbstractController
@@ -72,7 +73,7 @@ class TaskController extends AbstractController
     }
 
     #[Route(path: '/tasks/{id}/delete', name: 'task_delete',methods:['GET'])]
-    public function deleteTaskAction(Task $task, TaskService $taskService,UserService $userService)
+    public function deleteTaskAction(Task $task, TaskService $taskService,UserService $userService): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $isDeletable = $userService->canDeleteTask($task->getCreator(),$this->getUser(),$this->isGranted('ROLE_ADMIN'));
         if(!$isDeletable)

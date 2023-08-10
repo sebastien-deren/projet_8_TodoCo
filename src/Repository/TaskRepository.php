@@ -6,11 +6,8 @@ namespace App\Repository;
 
 use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
 /**
  * @extends ServiceEntityRepository<Task>

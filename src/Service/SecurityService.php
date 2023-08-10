@@ -14,11 +14,11 @@ class SecurityService
     {
         
     }
-    public function setPassword(User $user,string $password)
+    public function setPassword(User $user,string $password):void
     {
         $user->setPassword($this->userPasswordHasherInterface->hashPassword($user,$password));
     }
-    public function saveUser(User $user)
+    public function saveUser(User $user):void
     {
         $this->userRepository->save($user,true);
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Tests\Security\SecurityTrait;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectManager;
@@ -36,7 +37,7 @@ class UserControllerTest extends WebTestCase
     /**
      * 
      */
-    public function testListAction()
+    public function testListAction():void
     {
         $crawler = $this->client->request('get', '/users');
         $this->assertResponseStatusCodeSame(200);
@@ -46,9 +47,10 @@ class UserControllerTest extends WebTestCase
     }
     /**
      * @dataProvider fieldProvider
+     * @param mixed[] $fieldForm
      * 
      */
-    public function testCreateAction(array $fieldForm, bool $isValid, string $csrfToken = null)
+    public function testCreateAction(array $fieldForm, bool $isValid, string $csrfToken = null):void
     {
         $expectedEntityCount = $this->userRepository->count([]);
         $crawler = $this->client->request('get', '/users/create');
@@ -58,9 +60,9 @@ class UserControllerTest extends WebTestCase
     }
     /**
      * @dataProvider fieldProvider
-     * 
+     * @param mixed[] $fieldForm
      */
-    public function testEditAction(array $fieldForm, bool $isValid, string $csrfToken = null)
+    public function testEditAction(array $fieldForm, bool $isValid, string $csrfToken = null):void
     {
 
         $user = $this->userRepository->findOneByUsername('test');
@@ -69,7 +71,10 @@ class UserControllerTest extends WebTestCase
         $this->checkFormSubmission($fieldForm, $isValid, 'Modifier', $crawler);
         $user->setUsername('test');
     }
-    public function checkFormSubmission(array $fieldForm, bool $isValid, string $button, Crawler $crawler)
+    /**
+     * @param mixed[] $fieldForm
+     */
+    public function checkFormSubmission(array $fieldForm, bool $isValid, string $button, Crawler $crawler):void
     {
         $form = $crawler->selectButton($button)->form();
         $this->assertNotNull($form);
@@ -79,7 +84,7 @@ class UserControllerTest extends WebTestCase
             $this->assertResponseStatusCodeSame(302);
             $crawler = $this->client->followRedirect();
             $this->assertResponseStatusCodeSame(200);
-            $user = $this->userRepository?->findOneByUsername($fieldForm['user']['username']);
+            $user = $this->userRepository->findOneByUsername($fieldForm['user']['username'])??null;
             $this->assertNotNull($user);
             $this->assertSame($fieldForm['user']['email'], $user->getEmail());
         } else {
@@ -87,7 +92,10 @@ class UserControllerTest extends WebTestCase
             $this->assertSame($crawler->getUri(), $crawlerSubmit->getUri());
         }
     }
-    public function fieldProvider()
+    /**
+     * @return array<mixed>
+     */
+    public function fieldProvider():array
     {
         return [
             [$this->createForm('test2', 'mdp', 'vraimail@g.com'), true],
@@ -101,7 +109,10 @@ class UserControllerTest extends WebTestCase
 
         ];
     }
-    public function createForm(string $username, string $password, string $mail, string $secondPassword = null)
+    /**
+     * @return array<mixed>
+     */
+    public function createForm(string $username, string $password, string $mail, string $secondPassword = null):array
     {
         return [
             "user" => [

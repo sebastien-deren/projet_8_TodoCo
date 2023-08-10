@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity;
 
@@ -22,7 +23,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    private $id;
+    private int $id;
 
     #[ORM\Column(type: 'string', length: 25, unique: true)]
     #[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.")]
@@ -34,11 +35,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 60, unique: true)]
     #[Assert\NotBlank(message: 'Vous devez saisir une adresse email.')]
     #[Assert\Email(message: "Le format de l'adresse n'est pas correcte.")]
-    private $email;
+    private string $email;
 
+    /**
+     * @var Collection<string|int,Task> $tasks
+     */
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Task::class, orphanRemoval: true)]
     private Collection $tasks;
 
+    /**
+     * @var array<string> $roles
+     */
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
     private array $roles = [];
 
@@ -47,7 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->tasks = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId():int
     {
         return $this->id;
     }
@@ -56,17 +63,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->username;
     }
 
-    public function getUsername()
+    public function getUsername():string
     {
         return $this->username;
     }
 
-    public function setUsername($username): void
+    public function setUsername(string $username): void
     {
         $this->username = $username;
     }
 
-    public function getSalt()
+    public function getSalt():null
     {
         return null;
     }
@@ -76,17 +83,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword($password): void
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
 
-    public function getEmail()
+    public function getEmail():string
     {
         return $this->email;
     }
 
-    public function setEmail($email): void
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
@@ -97,6 +104,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
+    /**
+     * @param array<string> $roles
+     */
     public function setRoles(array|string $roles): self
     {
         if (is_string($roles)) {
@@ -112,7 +122,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Task>
+     * @return Collection<int|string, Task>
      */
     public function getTasks(): Collection
     {

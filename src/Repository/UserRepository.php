@@ -11,6 +11,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 /**
  * @extends ServiceEntityRepository<User>
  *
+ * @method User|null findOneByUsername(string $username)
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
  * @method User|null findOneBy(array $criteria, array $orderBy = null)
  * @method User[]    findAll()

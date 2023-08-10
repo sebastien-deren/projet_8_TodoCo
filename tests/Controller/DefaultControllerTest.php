@@ -10,7 +10,7 @@ class DefaultControllerTest extends WebTestCase
 {
 
 
-    public function testIndex()
+    public function testIndex():void
     {
         $client = static::createClient();
 

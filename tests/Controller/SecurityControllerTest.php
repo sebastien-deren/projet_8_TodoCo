@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Controller;
 
+use Closure;
+use App\Enum\Role;
 use App\Entity\Task;
 use App\Entity\User;
-use App\Enum\Role;
-use Closure;
 use Doctrine\ORM\EntityManager;
-use PhpParser\Node\Expr\Instanceof_;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DomCrawler\UriResolver;
 use Tests\Security\SecurityTrait;
 
-use function PHPUnit\Framework\isNull;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SecurityControllerTest extends WebTestCase
 {
@@ -32,7 +29,7 @@ class SecurityControllerTest extends WebTestCase
      * @dataProvider routesAuthorizedProvider
      *
      */
-    public function testLoginActionAdmin(string|Closure $route,Role $role, string $class = null)
+    public function testLoginActionAdmin(string|Closure $route, Role $role, string $class = null): void
     {
 
         $user = $this->em->getRepository(User::class)->findOneByUsername('admin');
@@ -47,13 +44,12 @@ class SecurityControllerTest extends WebTestCase
         $this->assertSame($expectedCrawler->getUri(), $crawler->getUri());
         $computedRoute = ($route instanceof Closure) ? $route($this->getId($class)) : $route;
         $this->accessAuthorized($computedRoute);
-
     }
-        /**
+    /**
      * @dataProvider routesAuthorizedProvider
      *
      */
-    public function testLoginActionUser(string|Closure $route, Role $role, string $class =null)
+    public function testLoginActionUser(string|Closure $route, Role $role, string $class = null): void
     {
 
         $user = $this->em->getRepository(User::class)->findOneByUsername('user');
@@ -67,19 +63,18 @@ class SecurityControllerTest extends WebTestCase
         $expectedCrawler = $this->client->request('GET', '/');
         $this->assertSame($expectedCrawler->getUri(), $crawler->getUri());
         $computedRoute = ($route instanceof Closure) ? $route($this->getId($class)) : $route;
-        if($role === Role::Admin){
+        if ($role === Role::Admin) {
             $this->accessDenied($computedRoute);
-        }
-        else{
+        } else {
             $this->accessAuthorized($computedRoute);
         }
     }
-    public function accessAuthorized(string $computedRoute)
+    public function accessAuthorized(string $computedRoute): void
     {
         $crawler = $this->client->request('GET', $computedRoute);
         $this->assertResponseStatusCodeSame(200);
     }
-    public function accessDenied(string $computedRoute)
+    public function accessDenied(string $computedRoute): void
     {
         $crawler = $this->client->request('GET', $computedRoute);
         $this->assertResponseStatusCodeSame(403);
@@ -88,7 +83,7 @@ class SecurityControllerTest extends WebTestCase
      *
      * @dataProvider routesForbiddenProvider
      */
-    public function testLogoutCheck(string $route,string $method)
+    public function testLogoutCheck(string $route, string $method): void
     {
         $expectedCrawler = $this->client->request('GET', '/login');
         $this->loginInAsUser($this->em);
@@ -100,7 +95,7 @@ class SecurityControllerTest extends WebTestCase
     /**
      * @dataProvider routesForbiddenProvider
      */
-    public function testFirewall(string $route,string $method)
+    public function testFirewall(string $route, string $method): void
     {
         $expectedCrawler = $this->client->request('GET', '/login');
         $this->client->request($method, $route);
@@ -108,30 +103,37 @@ class SecurityControllerTest extends WebTestCase
         $this->assertEquals($expectedCrawler->text(), $crawler->text());
     }
     //routes behind firewall
-    public function routesForbiddenProvider()
+    /**
+     * @return mixed[]
+     */
+    public function routesForbiddenProvider(): array
     {
         return array(
-            array('/tasks','GET'),
-            array('/tasks/create','GET'),
-            array('/tasks/1/toggle','GET'),
-            array('tasks/1/delete','GET'),
-            array('/tasks/1/edit','GET'),
-            array('/users/1/edit','GET'),
-            array('/users','GET'),
+            array('/tasks', 'GET'),
+            array('/tasks/create', 'GET'),
+            array('/tasks/1/toggle', 'GET'),
+            array('tasks/1/delete', 'GET'),
+            array('/tasks/1/edit', 'GET'),
+            array('/users/1/edit', 'GET'),
+            array('/users', 'GET'),
         );
     }
-    public function routesAuthorizedProvider()
+    /**
+     * @return mixed[]
+     */
+    public function routesAuthorizedProvider(): array
     {
         return array(
-            array('/tasks',Role::User),
-            array('/tasks/create',Role::User),
-            array('/users',Role::Admin),
-            array(fn ($id) => 'tasks/' . $id . '/edit',Role::User ,Task::class),
-            array(fn ($id) => 'users/' . $id . '/edit',Role::Admin, User::class),
+            array('/tasks', Role::User),
+            array('/tasks/create', Role::User),
+            array('/users', Role::Admin),
+            array(fn ($id) => 'tasks/' . $id . '/edit', Role::User, Task::class),
+            array(fn ($id) => 'users/' . $id . '/edit', Role::Admin, User::class),
         );
     }
-    private function getId($class): int
+    private function getId(string $class): int
     {
-        return $this->em->getRepository($class)->findAll()[0]->getId();
+        $repository= $this->em->getRepository($class);
+        return $repository->findAll()[0]->getId();
     }
 }

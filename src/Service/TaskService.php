@@ -14,24 +14,25 @@ class TaskService
         private TaskRepository $taskRepository,
         private UserService $userService
     ){}
-    public function toggle(Task $task)
+    public function toggle(Task $task):void
     {
         $task->toggle(!$task->isDone());
         $this->saveTask($task);
     }
-    public function createTask(Task $task,User|null $currentUser){
+    public function createTask(Task $task,User|null $currentUser):void
+    {
         if(\is_null($currentUser)){
-            $currentUser = $this->taskRepository?->findOneByUsername('anonymous') ?? $this->UserService->createAnon();
+            $currentUser = $this->taskRepository->findOneByUsername('anonymous') ?? $this->userService->createAnon();
         }
         $task->setCreator($currentUser);
         $this->saveTask($task);
 
     }
-    public function saveTask(Task $task)
+    public function saveTask(Task $task):void
     {
         $this->taskRepository->save($task,true);
     }
-    public function removeTask(Task $task)
+    public function removeTask(Task $task):void
     {
         $this->taskRepository->remove($task,true);
     }

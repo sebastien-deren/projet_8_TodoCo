@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 trait SecurityTrait{
     protected function loginInAsUser(EntityManagerInterface $em,string $name = 'test'):User|null
     {
-        $user = $em->getRepository(User::class)?->findOneByUsername($name);
+        $user = $em->getRepository(User::class)->findOneByUsername($name) ??null;
         if(isset($this->client) && $this->client instanceof KernelBrowser){
             $this->client->loginUser($user);
         }
