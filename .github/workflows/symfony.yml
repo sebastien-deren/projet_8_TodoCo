@@ -50,4 +50,4 @@ jobs:
         DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
       run: vendor/bin/phpunit
     - name: remove .env.test.local
-    - run: rm .env.test.local
+      run: rm .env.test.local
