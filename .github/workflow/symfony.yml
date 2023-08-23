@@ -7,9 +7,17 @@ name: Symfony
 
 on:
   push:
-    branches: ["main", "develop", "ContinuousIntegration"]
+    branches:
+      - main
+      - "develop"
+      - "features/**"
+
   pull_request:
-    branches: ["main", "develop", "ContinuousIntegration"]
+    # Sequence of patterns matched against refs/heads
+    branches:
+      - main
+      - "develop"
+      - "features/**"
 
 permissions:
   contents: read
@@ -45,15 +53,17 @@ jobs:
         env:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
         run: |
-          php/bin console doctrine:database:create
-          php/bin console doctrine:schema:update --force
+          php bin/console doctrine:database:create
+          php/bin/console doctrine:schema:update --force
+          php bin/console doctrine:fixture:load
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-        run: tools/phpunit.phar --coverage-clover test/clover/
+        run: vendor/bin/phpunit --coverage-clover test/clover/
       - name: Send test to codeClimage
         uses: paambaati/codeclimate-action@v4.0.0
         env:
           CC_TEST_REPORTER_ID: ffe067866c922987084ba2398b3954fc0bae8fef33ddbbe9faa4dc86e7aab3b3
         with:
           coverageLocations: test/clover/:clover
+
