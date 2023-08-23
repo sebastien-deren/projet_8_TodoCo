@@ -41,10 +41,17 @@ jobs:
       run: |
         mkdir -p data
         touch data/database.sqlite
+    -name: Import Database
+      env:
+        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
+      run: 
+        php/bin doctrine:database:create
+        php/bin doctrine:schema:update --force
+        php/bin doctrine:migration:migrate
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
         DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-      run: tools/phpunit.phar --coverage-clover test/clover/
+      run: vendor/bin/phpunit --coverage-clover test/clover/
     - name: Send test to codeClimage
       uses: paambaati/codeclimate-action@v4.0.0
       env:
