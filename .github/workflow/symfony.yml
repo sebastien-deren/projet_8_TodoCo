@@ -7,9 +7,17 @@ name: Symfony
 
 on:
   push:
-    branches: ["main", "develop", "ContinuousIntegration"]
+    branches:
+      - main
+      - "develop"
+      - "features/**"
+
   pull_request:
-    branches: ["main", "develop", "ContinuousIntegration"]
+    # Sequence of patterns matched against refs/heads
+    branches:
+      - main
+      - "develop"
+      - "features/**"
 
 permissions:
   contents: read
