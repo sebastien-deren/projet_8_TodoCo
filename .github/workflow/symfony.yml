@@ -54,7 +54,7 @@ jobs:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
         run: |
           php bin/console doctrine:database:create --env=test -n
-          php/bin/console doctrine:schema:update --force --env=test -n 
+          php bin/console doctrine:schema:update --force --env=test -n 
           php bin/console doctrine:fixture:load --env=test -n
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
