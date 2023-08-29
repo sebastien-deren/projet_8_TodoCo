@@ -17,6 +17,7 @@ security:
       lazy: true
       provider: doctrine
       form_login:
+        default_target_path: /
         login_path: login
         check_path: login
       logout:
