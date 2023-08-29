@@ -39,7 +39,7 @@ class TaskController extends AbstractController
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list_todo');
         }
 
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
@@ -57,7 +57,7 @@ class TaskController extends AbstractController
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute($task->isDone() ? 'task_list_done' : 'task_list_todo');
         }
 
         return $this->render('task/edit.html.twig', [
@@ -82,13 +82,13 @@ class TaskController extends AbstractController
         $isDeletable = $userService->canDeleteTask($task->getCreator(), $this->getUser(), $this->isGranted('ROLE_ADMIN'));
         if (!$isDeletable) {
             $this->addFlash('error', 'Vous n\'avez pas les droits pour supprimer cette tâche');
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute($task->isDone() ? 'task_list_done' : 'task_list_todo');
         }
 
         $taskService->removeTask($task);
 
         $this->addFlash('success', 'La tâche a bien été supprimée.');
 
-        return $this->redirectToRoute('task_list');
+        return $task->isDone() ? $this->redirectToRoute('task_list_done') : $this->redirectToRoute('task_list_todo');
     }
 }

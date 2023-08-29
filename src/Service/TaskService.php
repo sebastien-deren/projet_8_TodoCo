@@ -52,16 +52,16 @@ class TaskService
     }
     public function saveTask(Task $task): void
     {
-        $this->taskRepository->save($task, true);
         $this->deleteCacheIsDone($task->isDone());
+        $this->taskRepository->save($task, true);
     }
     public function removeTask(Task $task): void
     {
-        $this->taskRepository->remove($task, true);
         $this->deleteCacheIsDone($task->isDone());
+        $this->taskRepository->remove($task, true);
     }
     private function deleteCacheIsDone(bool $isDone): void
     {
-        $isDone ? $this->cache->delete('donetasks') : $this->cache->delete('todoTasks');
+        $isDone ? $this->cache->delete('doneTasks') : $this->cache->delete('todoTasks');
     }
 }

@@ -11,7 +11,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class TaskControllerTest extends WebTestCase
 {
@@ -29,6 +29,11 @@ class TaskControllerTest extends WebTestCase
         $this->em = $this->client->getContainer()->get('doctrine')->getManager();
         $this->taskRepository = $this->em->getRepository(Task::class);
     }
+    public function tearDown() :void
+    {
+        parent::tearDown();
+
+    }
     /**
      *
      */
@@ -43,7 +48,7 @@ class TaskControllerTest extends WebTestCase
         //check that the templates is loaded corretly
         $this->assertSame('To Do List app', $crawler->filter('title')->text());
         //check that we have the good number of task (will changed 10 to $task->findAll->count() )
-        $this->assertCount(count($this->taskRepository->findAll()), $crawler->filter('div.row > div.col-lg-4'));
+        $this->assertCount(count($this->taskRepository->findBy(['isDone' => false])), $crawler->filter('div.row > div.col-lg-4'));
     }
     public function testDone()
     {
@@ -56,7 +61,7 @@ class TaskControllerTest extends WebTestCase
         //check that the templates is loaded corretly
         $this->assertSame('To Do List app', $crawler->filter('title')->text());
         //check that we have the good number of task (will changed 10 to $task->findAll->count() )
-        $this->assertCount(count($this->taskRepository->findAll()), $crawler->filter('div.row > div.col-lg-4'));
+        $this->assertSelectorCount(count($this->taskRepository->findBy(['isDone' => true])), 'div.row > div.col-lg-4 > div.thumbnail > div > form > button.btn-success');
     }
     /**
      * @dataProvider formProvider
