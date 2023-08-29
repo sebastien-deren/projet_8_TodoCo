@@ -21,6 +21,7 @@
 .phpunit
 .phpunit.result.cache
 /phpunit.xml
+/tests/coverage
 ###< symfony/phpunit-bridge ###
 
 ###> symfony/framework-bundle ###
@@ -32,3 +33,15 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+.phpunit.cache/
+###< symfony/phpunit-bridge ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/tests/coverage/
+.phpunit.result.cache
+###< phpunit/phpunit ###

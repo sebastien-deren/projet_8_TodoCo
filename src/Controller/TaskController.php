@@ -4,28 +4,24 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Form\TaskType;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\TaskRepository;
+use App\Repository\UserRepository;
+use App\Service\TaskService;
+use App\Service\UserService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
 class TaskController extends AbstractController
 {
-    /**
-     * @Route("/tasks", name="task_list")
-     */
-    public function listAction(ManagerRegistry $managerRegistry)
+    #[Route(path: '/tasks', name: 'task_list',methods:['GET'])]
+    public function listAction(TaskRepository $taskRepository): \Symfony\Component\HttpFoundation\Response
     {
-        return $this->render('task/list.html.twig', ['tasks' => $managerRegistry->getRepository(Task::class)->findAll()]);
+        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findAll()]);
     }
 
-    /**
-     * @Route("/tasks/create", name="task_create")
-     */
-    public function createAction(Request $request,ManagerRegistry $managerRegistry)
+    #[Route(path: '/tasks/create', name: 'task_create',methods:['GET','POST'])]
+    public function createAction(Request $request,TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -33,11 +29,8 @@ class TaskController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //JUST CALL A SERVICE
-            $em = $managerRegistry->getManager();
 
-            $em->persist($task);
-            $em->flush();
+            $taskService->createTask($task,$this->getUser());
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
@@ -47,18 +40,15 @@ class TaskController extends AbstractController
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
-    /**
-     * @Route("/tasks/{id}/edit", name="task_edit")
-     */
-    public function editAction(Task $task, Request $request,ManagerRegistry $managerRegistry)
+    #[Route(path: '/tasks/{id}/edit', name: 'task_edit',methods:['GET','POST'])]
+    public function editAction(Task $task, Request $request,TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            //NOT IN CONTROLLER
-            $managerRegistry->getManager()->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $taskService->saveTask($task);
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
 
@@ -71,29 +61,28 @@ class TaskController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/tasks/{id}/toggle", name="task_toggle")
-     */
-    public function toggleTaskAction(Task $task,ManagerRegistry $managerRegistry)
+    #[Route(path: '/tasks/{id}/toggle', name: 'task_toggle',methods:['GET'])]
+    public function toggleTaskAction(Task $task,TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse
     {
-        //ALL THAT AS NO PLACE IN CONTROLLER
-        $task->toggle(!$task->isDone());
-        $managerRegistry->getManager()->flush();
+        $taskService->toggle($task);
 
         $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
 
         return $this->redirectToRoute('task_list');
     }
 
-    /**
-     * @Route("/tasks/{id}/delete", name="task_delete")
-     */
-    public function deleteTaskAction(Task $task)
+    #[Route(path: '/tasks/{id}/delete', name: 'task_delete',methods:['GET'])]
+    public function deleteTaskAction(Task $task, TaskService $taskService,UserService $userService)
     {
-        //NOT IN CONTROLLER
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($task);
-        $em->flush();
+        $isDeletable = $userService->canDeleteTask($task->getCreator(),$this->getUser(),$this->isGranted('ROLE_ADMIN'));
+        if(!$isDeletable)
+        {
+            $this->addFlash('error','Vous n\'avez pas les droits pour supprimer cette tâche');
+            return $this->redirectToRoute('task_list');
+
+        }
+
+        $taskService->removeTask($task);
 
         $this->addFlash('success', 'La tâche a bien été supprimée.');
 
