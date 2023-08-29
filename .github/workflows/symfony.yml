@@ -41,8 +41,10 @@ jobs:
           ${{ runner.os }}-php-
     - name: update Composer
       run: composer update --no-interaction
-    - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Install Dependencies 
+      run: |
+        composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        composer require --dev orm-fixtures
     - name: Create Database
       run: |
         mkdir -p data
