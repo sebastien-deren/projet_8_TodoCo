@@ -61,5 +61,4 @@ class TaskRepository extends ServiceEntityRepository
             return $task;
         }, $tasks);
     }
-    
 }
