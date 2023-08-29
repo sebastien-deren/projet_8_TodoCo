@@ -53,17 +53,16 @@ jobs:
         env:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
         run: |
-          php bin/console doctrine:database:create
-          php/bin/console doctrine:schema:update --force
-          php bin/console doctrine:fixture:load
+          php bin/console doctrine:database:create --env=test -n
+          php/bin/console doctrine:schema:update --force --env=test -n 
+          php bin/console doctrine:fixture:load --env=test -n
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-        run: vendor/bin/phpunit --coverage-clover test/clover/
+        run: vendor/bin/phpunit --coverage-clover test/clover/ || php bin/phpunit
       - name: Send test to codeClimage
         uses: paambaati/codeclimate-action@v4.0.0
         env:
           CC_TEST_REPORTER_ID: ffe067866c922987084ba2398b3954fc0bae8fef33ddbbe9faa4dc86e7aab3b3
         with:
           coverageLocations: test/clover/:clover
-
