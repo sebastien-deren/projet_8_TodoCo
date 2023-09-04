@@ -71,7 +71,14 @@ class TaskController extends AbstractController
     {
         $taskService->toggle($task);
         $stringDone = $task->isDone() ? '' : 'non';
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme  %s faite.', $task->getTitle(), $stringDone));
+        $this->addFlash(
+            'success',
+            sprintf(
+                'La tâche %s a bien été marquée comme  %s faite.',
+                $task->getTitle(),
+                $stringDone
+            )
+        );
 
         return $task->isDone() ? $this->redirectToRoute('task_list_done') : $this->redirectToRoute('task_list_todo');
     }
@@ -79,7 +86,12 @@ class TaskController extends AbstractController
     #[Route(path: '/tasks/{id}/delete', name: 'task_delete', methods: ['GET'])]
     public function deleteTaskAction(Task $task, TaskService $taskService, UserService $userService)
     {
-        $isDeletable = $userService->canDeleteTask($task->getCreator(), $this->getUser(), $this->isGranted('ROLE_ADMIN'));
+        $isDeletable = $userService
+            ->canDeleteTask(
+                $task->getCreator(),
+                $this->getUser(),
+                $this->isGranted('ROLE_ADMIN')
+            );
         if (!$isDeletable) {
             $this->addFlash('error', 'Vous n\'avez pas les droits pour supprimer cette tâche');
             return $this->redirectToRoute($task->isDone() ? 'task_list_done' : 'task_list_todo');

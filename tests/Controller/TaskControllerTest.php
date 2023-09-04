@@ -29,10 +29,9 @@ class TaskControllerTest extends WebTestCase
         $this->em = $this->client->getContainer()->get('doctrine')->getManager();
         $this->taskRepository = $this->em->getRepository(Task::class);
     }
-    public function tearDown() :void
+    public function tearDown(): void
     {
         parent::tearDown();
-
     }
     /**
      *
