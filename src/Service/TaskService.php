@@ -9,14 +9,14 @@ use App\Entity\User;
 use App\Service\UserService;
 use App\Repository\TaskRepository;
 use Symfony\Contracts\Cache\ItemInterface;
-use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class TaskService
 {
     public function __construct(
         private TaskRepository $taskRepository,
         private UserService $userService,
-        private CacheInterface $cache
+        private TagAwareCacheInterface $cache
     ) {
     }
 
