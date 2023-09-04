@@ -14,14 +14,19 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TaskController extends AbstractController
 {
-    #[Route(path: '/tasks', name: 'task_list',methods:['GET'])]
-    public function listAction(TaskRepository $taskRepository): \Symfony\Component\HttpFoundation\Response
+    #[Route(path: '/tasks/todo', name: 'task_list_todo', methods: ['GET'])]
+    public function todoList(TaskService $taskService): \Symfony\Component\HttpFoundation\Response
     {
-        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findAll()]);
+        return $this->render('task/list.html.twig', ['tasks' => $taskService->findTodo()]);
+    }
+    #[Route(path: '/tasks/done', name: 'task_list_done', methods: ['GET'])]
+    public function doneList(TaskService $taskService): \Symfony\Component\HttpFoundation\Response
+    {
+        return $this->render('task/list.html.twig', ['tasks' => $taskService->findDone()]);
     }
 
-    #[Route(path: '/tasks/create', name: 'task_create',methods:['GET','POST'])]
-    public function createAction(Request $request,TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    #[Route(path: '/tasks/create', name: 'task_create', methods: ['GET', 'POST'])]
+    public function createAction(Request $request, TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -30,18 +35,18 @@ class TaskController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $taskService->createTask($task,$this->getUser());
+            $taskService->createTask($task, $this->getUser());
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list_todo');
         }
 
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
-    #[Route(path: '/tasks/{id}/edit', name: 'task_edit',methods:['GET','POST'])]
-    public function editAction(Task $task, Request $request,TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    #[Route(path: '/tasks/{id}/edit', name: 'task_edit', methods: ['GET', 'POST'])]
+    public function editAction(Task $task, Request $request, TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $form = $this->createForm(TaskType::class, $task);
 
@@ -52,7 +57,7 @@ class TaskController extends AbstractController
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute($task->isDone() ? 'task_list_done' : 'task_list_todo');
         }
 
         return $this->render('task/edit.html.twig', [
@@ -61,31 +66,29 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/tasks/{id}/toggle', name: 'task_toggle',methods:['GET'])]
-    public function toggleTaskAction(Task $task,TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse
+    #[Route(path: '/tasks/{id}/toggle', name: 'task_toggle', methods: ['GET'])]
+    public function toggleTaskAction(Task $task, TaskService $taskService): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $taskService->toggle($task);
+        $stringDone = $task->isDone() ? '' : 'non';
+        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme  %s faite.', $task->getTitle(), $stringDone));
 
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
-
-        return $this->redirectToRoute('task_list');
+        return $task->isDone() ? $this->redirectToRoute('task_list_done') : $this->redirectToRoute('task_list_todo');
     }
 
-    #[Route(path: '/tasks/{id}/delete', name: 'task_delete',methods:['GET'])]
-    public function deleteTaskAction(Task $task, TaskService $taskService,UserService $userService)
+    #[Route(path: '/tasks/{id}/delete', name: 'task_delete', methods: ['GET'])]
+    public function deleteTaskAction(Task $task, TaskService $taskService, UserService $userService)
     {
-        $isDeletable = $userService->canDeleteTask($task->getCreator(),$this->getUser(),$this->isGranted('ROLE_ADMIN'));
-        if(!$isDeletable)
-        {
-            $this->addFlash('error','Vous n\'avez pas les droits pour supprimer cette tâche');
-            return $this->redirectToRoute('task_list');
-
+        $isDeletable = $userService->canDeleteTask($task->getCreator(), $this->getUser(), $this->isGranted('ROLE_ADMIN'));
+        if (!$isDeletable) {
+            $this->addFlash('error', 'Vous n\'avez pas les droits pour supprimer cette tâche');
+            return $this->redirectToRoute($task->isDone() ? 'task_list_done' : 'task_list_todo');
         }
 
         $taskService->removeTask($task);
 
         $this->addFlash('success', 'La tâche a bien été supprimée.');
 
-        return $this->redirectToRoute('task_list');
+        return $task->isDone() ? $this->redirectToRoute('task_list_done') : $this->redirectToRoute('task_list_todo');
     }
 }

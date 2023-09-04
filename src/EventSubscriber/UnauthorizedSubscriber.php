@@ -15,16 +15,14 @@ class UnauthorizedSubscriber implements EventSubscriberInterface
 {
     public function __construct(private RouterInterface $router)
     {
-        
     }
     public function onKernelException(ExceptionEvent $event): void
     {
         //might be better to get an unauthorized page setup
         $exception = $event->getThrowable();
-        if($exception instanceof AccessDeniedHttpException){
+        if ($exception instanceof AccessDeniedHttpException) {
             $response = new RedirectResponse($this->router->generate('homepage'));
             $event->setResponse($response);
-  
         }
     }
 

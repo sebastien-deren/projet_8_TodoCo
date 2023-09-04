@@ -32,7 +32,7 @@ class SecurityControllerTest extends WebTestCase
      * @dataProvider routesAuthorizedProvider
      *
      */
-    public function testLoginActionAdmin(string|Closure $route,Role $role, string $class = null)
+    public function testLoginActionAdmin(string|Closure $route, Role $role, string $class = null)
     {
 
         $user = $this->em->getRepository(User::class)->findOneByUsername('admin');
@@ -47,13 +47,12 @@ class SecurityControllerTest extends WebTestCase
         $this->assertSame($expectedCrawler->getUri(), $crawler->getUri());
         $computedRoute = ($route instanceof Closure) ? $route($this->getId($class)) : $route;
         $this->accessAuthorized($computedRoute);
-
     }
-        /**
+    /**
      * @dataProvider routesAuthorizedProvider
      *
      */
-    public function testLoginActionUser(string|Closure $route, Role $role, string $class =null)
+    public function testLoginActionUser(string|Closure $route, Role $role, string $class = null)
     {
 
         $user = $this->em->getRepository(User::class)->findOneByUsername('user');
@@ -67,10 +66,9 @@ class SecurityControllerTest extends WebTestCase
         $expectedCrawler = $this->client->request('GET', '/');
         $this->assertSame($expectedCrawler->getUri(), $crawler->getUri());
         $computedRoute = ($route instanceof Closure) ? $route($this->getId($class)) : $route;
-        if($role === Role::Admin){
+        if ($role === Role::Admin) {
             $this->accessDenied($computedRoute);
-        }
-        else{
+        } else {
             $this->accessAuthorized($computedRoute);
         }
     }
@@ -88,7 +86,7 @@ class SecurityControllerTest extends WebTestCase
      *
      * @dataProvider routesForbiddenProvider
      */
-    public function testLogoutCheck(string $route,string $method)
+    public function testLogoutCheck(string $route, string $method)
     {
         $expectedCrawler = $this->client->request('GET', '/login');
         $this->loginInAsUser($this->em);
@@ -100,7 +98,7 @@ class SecurityControllerTest extends WebTestCase
     /**
      * @dataProvider routesForbiddenProvider
      */
-    public function testFirewall(string $route,string $method)
+    public function testFirewall(string $route, string $method)
     {
         $expectedCrawler = $this->client->request('GET', '/login');
         $this->client->request($method, $route);
@@ -111,23 +109,24 @@ class SecurityControllerTest extends WebTestCase
     public function routesForbiddenProvider()
     {
         return array(
-            array('/tasks','GET'),
-            array('/tasks/create','GET'),
-            array('/tasks/1/toggle','GET'),
-            array('tasks/1/delete','GET'),
-            array('/tasks/1/edit','GET'),
-            array('/users/1/edit','GET'),
-            array('/users','GET'),
+            array('/tasks/todo', 'GET'),
+            array('tasks/done', 'GET'),
+            array('/tasks/create', 'GET'),
+            array('/tasks/1/toggle', 'GET'),
+            array('tasks/1/delete', 'GET'),
+            array('/tasks/1/edit', 'GET'),
+            array('/users/1/edit', 'GET'),
+            array('/users', 'GET'),
         );
     }
     public function routesAuthorizedProvider()
     {
         return array(
-            array('/tasks',Role::User),
-            array('/tasks/create',Role::User),
-            array('/users',Role::Admin),
-            array(fn ($id) => 'tasks/' . $id . '/edit',Role::User ,Task::class),
-            array(fn ($id) => 'users/' . $id . '/edit',Role::Admin, User::class),
+            array('/tasks/todo', Role::User),
+            array('/tasks/create', Role::User),
+            array('/users', Role::Admin),
+            array(fn ($id) => 'tasks/' . $id . '/edit', Role::User, Task::class),
+            array(fn ($id) => 'users/' . $id . '/edit', Role::Admin, User::class),
         );
     }
     private function getId($class): int
