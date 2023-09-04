@@ -8,7 +8,9 @@ use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\Persistence\ManagerRegistry;
+use stdClass;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
@@ -43,4 +45,21 @@ class TaskRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    public function tasksTodo(): array
+    {
+        $tasks =  $this->findBy(["isDone" => false]);
+        return \array_map(function (Task $task): Task {
+            $task->getCreator()->getUserName();
+            return $task;
+        }, $tasks);
+    }
+    public function tasksDone(): array
+    {
+        $tasks =  $this->findBy(["isDone" => true]);
+        return \array_map(function (Task $task): Task {
+            $task->getCreator()->getUserName();
+            return $task;
+        }, $tasks);
+    }
+    
 }

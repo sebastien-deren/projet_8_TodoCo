@@ -11,7 +11,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class TaskControllerTest extends WebTestCase
 {
@@ -29,21 +29,39 @@ class TaskControllerTest extends WebTestCase
         $this->em = $this->client->getContainer()->get('doctrine')->getManager();
         $this->taskRepository = $this->em->getRepository(Task::class);
     }
+    public function tearDown() :void
+    {
+        parent::tearDown();
+
+    }
     /**
      *
      */
-    public function testIndex()
+    public function testTodo()
     {
         $this->loginInAsUser($this->em);
         //Hardcoding the request URLs is a best practice for application tests. 
-        $crawler = $this->client->request('GET', "tasks");
+        $crawler = $this->client->request('GET', "tasks/todo");
         //check that the page is loaded correctly
         $this->assertResponseStatusCodeSame(200);
         //might rewrite this to not break on site reworking
         //check that the templates is loaded corretly
         $this->assertSame('To Do List app', $crawler->filter('title')->text());
         //check that we have the good number of task (will changed 10 to $task->findAll->count() )
-        $this->assertCount(count($this->taskRepository->findAll()), $crawler->filter('div.row > div.col-lg-4'));
+        $this->assertCount(count($this->taskRepository->findBy(['isDone' => false])), $crawler->filter('div.row > div.col-lg-4'));
+    }
+    public function testDone()
+    {
+        $this->loginInAsUser($this->em);
+        //Hardcoding the request URLs is a best practice for application tests. 
+        $crawler = $this->client->request('GET', "tasks/done");
+        //check that the page is loaded correctly
+        $this->assertResponseStatusCodeSame(200);
+        //might rewrite this to not break on site reworking
+        //check that the templates is loaded corretly
+        $this->assertSame('To Do List app', $crawler->filter('title')->text());
+        //check that we have the good number of task (will changed 10 to $task->findAll->count() )
+        $this->assertSelectorCount(count($this->taskRepository->findBy(['isDone' => true])), 'div.row > div.col-lg-4 > div.thumbnail > div > form > button.btn-success');
     }
     /**
      * @dataProvider formProvider
@@ -135,8 +153,8 @@ class TaskControllerTest extends WebTestCase
     public function testDeleteTaskAdmin()
     {
         $expectedEntityCount = $this->taskRepository->count([]);
-        $admin = $this->loginInAsUser($this->em,'admin');
-        $this->assertContains('ROLE_ADMIN',$admin->getRoles());
+        $admin = $this->loginInAsUser($this->em, 'admin');
+        $this->assertContains('ROLE_ADMIN', $admin->getRoles());
         $task = $this->taskRepository->findOneByCreator($this->em->getRepository(User::class)->findOneByUsername('anonymous'));
         $taskId = $task->getId();
         $this->assertNotNull($task);
@@ -153,17 +171,16 @@ class TaskControllerTest extends WebTestCase
         $user = $this->loginInAsUser($this->em);
         $task = $this->createTask($user);
         $expectedEntityCount = $this->taskRepository->count([]);
-        $this->assertContains('ROLE_USER',$user->getRoles());
-        $this->assertSame($user->getUsername(),$task->getCreator()->getUsername());
+        $this->assertContains('ROLE_USER', $user->getRoles());
+        $this->assertSame($user->getUsername(), $task->getCreator()->getUsername());
         $this->client->request('GET', 'tasks/' . $task->getId() . '/delete');
         $this->assertResponseStatusCodeSame(302);
         $crawler = $this->client->followRedirect();
         $this->assertStringNotContainsString('Vous n\'avez pas les droits', $crawler->html());
         $this->assertResponseStatusCodeSame(200);
-        $this->assertEquals($expectedEntityCount - 1, $this->taskRepository->count([]));   
-
+        $this->assertEquals($expectedEntityCount - 1, $this->taskRepository->count([]));
     }
-    public function createTask(User $user):Task
+    public function createTask(User $user): Task
     {
         $task = new Task;
         $task->setContent('coucou');
